@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zina Hamoumi — Administration Réseau & Sécurité</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #F9F8FF;
+  --white:    #FFFFFF;
+  --surface:  #F2F0FC;
+  --border:   #E4E1F5;
+  --ink:      #16132E;
+  --ink-2:    #433E62;
+  --ink-3:    #8B87A8;
+  --primary:  #5B3FE8;
+  --primary-d:#4530C4;
+  --primary-l:#EDE9FF;
+  --accent:   #1ABFB5;
+  --accent-l: #E2F8F7;
+  --red:      #F05A5A;
+  --gold:     #E8A020;
+  --gold-l:   #FEF3DC;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body { background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; overflow-x:hidden; line-height:1.6; }
+a { text-decoration:none; color:inherit; }
+
+/* ─ NAV ─ */
+#nav {
+  position:fixed; top:0; left:0; right:0; z-index:999;
+  height:64px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 6vw;
+  background:rgba(249,248,255,.92); backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border); transition:box-shadow .3s;
+}
+#nav.sh { box-shadow:0 2px 20px rgba(91,63,232,.08); }
+.n-logo { font-family:'Sora',sans-serif; font-weight:800; font-size:.95rem; letter-spacing:-.3px; }
+.n-logo span { color:var(--primary); }
+.n-links { display:flex; gap:2rem; list-style:none; }
+.n-links a { font-size:.8rem; font-weight:500; color:var(--ink-2); transition:color .2s; }
+.n-links a:hover { color:var(--primary); }
+.n-btn { font-size:.78rem; font-weight:600; padding:.52rem 1.3rem; background:var(--primary); color:#fff; border-radius:8px; transition:all .2s; }
+.n-btn:hover { background:var(--primary-d); transform:translateY(-1px); }
+.hbg { display:none; background:none; border:none; cursor:pointer; flex-direction:column; gap:5px; padding:4px; }
+.hbg span { width:21px; height:2px; background:var(--ink); border-radius:2px; display:block; transition:all .3s; }
+.hbg.open span:nth-child(1){ transform:rotate(45deg) translate(5px,5px); }
+.hbg.open span:nth-child(2){ opacity:0; }
+.hbg.open span:nth-child(3){ transform:rotate(-45deg) translate(5px,-5px); }
+.mob-menu { display:none; position:fixed; inset:0; top:64px; z-index:998; background:var(--bg); flex-direction:column; align-items:center; justify-content:center; gap:2.5rem; }
+.mob-menu.open { display:flex; }
+.mob-menu a { font-family:'Sora',sans-serif; font-size:1.8rem; font-weight:700; color:var(--ink); transition:color .2s; }
+.mob-menu a:hover { color:var(--primary); }
+
+/* ─ HERO ─ */
+#home {
+  min-height:100vh; padding:100px 6vw 80px;
+  display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center;
+  max-width:1300px; margin:0 auto;
+}
+.h-tag {
+  display:inline-flex; align-items:center; gap:.6rem;
+  font-size:.72rem; font-weight:600; letter-spacing:2px; text-transform:uppercase;
+  color:var(--primary); background:var(--primary-l); padding:.45rem 1rem; border-radius:100px;
+  margin-bottom:1.8rem;
+}
+.h-tag-dot { width:6px; height:6px; background:var(--primary); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+h1.h-title {
+  font-family:'Sora',sans-serif; font-weight:800;
+  font-size:clamp(2.8rem,5.5vw,5.2rem); line-height:1.05;
+  letter-spacing:-2px; margin-bottom:1.5rem; color:var(--ink);
+}
+h1.h-title .grad {
+  background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.h-desc { font-size:1rem; color:var(--ink-2); line-height:1.9; max-width:450px; margin-bottom:2.5rem; }
+
+.h-btns { display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:3rem; }
+.btn-p { padding:.85rem 2rem; background:var(--primary); color:#fff; font-size:.82rem; font-weight:600; border-radius:8px; transition:all .25s; }
+.btn-p:hover { background:var(--primary-d); transform:translateY(-2px); box-shadow:0 8px 24px rgba(91,63,232,.3); }
+.btn-g { padding:.85rem 2rem; background:transparent; color:var(--ink); font-size:.82rem; font-weight:600; border:1.5px solid var(--border); border-radius:8px; transition:all .25s; }
+.btn-g:hover { border-color:var(--primary); color:var(--primary); transform:translateY(-2px); }
+
+.h-numbers { display:flex; gap:2.5rem; }
+.h-num-n { font-family:'Sora',sans-serif; font-size:1.9rem; font-weight:800; color:var(--ink); line-height:1; }
+.h-num-n span { color:var(--primary); }
+.h-num-l { font-size:.72rem; color:var(--ink-3); margin-top:.25rem; }
+
+/* hero right */
+.h-card {
+  background:var(--white); border:1px solid var(--border); border-radius:20px;
+  padding:2.4rem; box-shadow:0 8px 40px rgba(91,63,232,.1); position:relative; overflow:hidden;
+}
+.h-card::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.h-card-label { font-size:.65rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--ink-3); margin-bottom:1.2rem; }
+.chips { display:flex; flex-wrap:wrap; gap:.55rem; margin-bottom:1.8rem; }
+.chip { font-size:.7rem; font-weight:500; padding:.38rem .9rem; border-radius:100px; }
+.chip-p { background:var(--primary-l); color:var(--primary); }
+.chip-a { background:var(--accent-l); color:var(--accent); }
+.chip-g { background:var(--gold-l); color:var(--gold); }
+.chip-n { background:var(--surface); color:var(--ink-2); }
+.h-card-sep { height:1px; background:var(--border); margin-bottom:1.6rem; }
+.h-card-stats { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.6rem; }
+.hcs-n { font-family:'Sora',sans-serif; font-size:1.8rem; font-weight:800; color:var(--ink); }
+.hcs-l { font-size:.68rem; color:var(--ink-3); margin-top:.2rem; }
+.avail-row { display:flex; align-items:center; gap:.6rem; font-size:.73rem; font-weight:600; color:var(--accent); background:var(--accent-l); padding:.55rem 1rem; border-radius:8px; }
+.av-dot { width:7px; height:7px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
+
+/* ─ SECTIONS ─ */
+.sec-wrap { max-width:1200px; margin:0 auto; padding:0 6vw; }
+.section { padding:88px 0; }
+.sec-alt { background:var(--surface); }
+.divider { height:1px; background:var(--border); }
+
+.sec-num { font-family:'Sora',sans-serif; font-size:.68rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--primary); margin-bottom:.8rem; }
+h2.sec-title { font-family:'Sora',sans-serif; font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:800; letter-spacing:-.5px; line-height:1.15; margin-bottom:.8rem; }
+.sec-sub { font-size:.93rem; color:var(--ink-2); line-height:1.85; max-width:540px; margin-bottom:3rem; }
+
+/* ─ ABOUT ─ */
+.about-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:5rem; align-items:start; }
+.about-p { font-size:.93rem; color:var(--ink-2); line-height:1.95; margin-bottom:1.1rem; }
+.about-p strong { color:var(--ink); font-weight:600; }
+.info-cards { display:flex; flex-direction:column; gap:.9rem; }
+.info-c {
+  display:flex; align-items:center; gap:1rem; padding:1rem 1.3rem;
+  background:var(--white); border:1px solid var(--border); border-radius:12px;
+  transition:all .25s; box-shadow:0 2px 8px rgba(91,63,232,.04);
+}
+.info-c:hover { border-color:rgba(91,63,232,.2); transform:translateX(5px); box-shadow:0 4px 20px rgba(91,63,232,.08); }
+.info-ic { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
+.ic-p { background:var(--primary-l); }
+.ic-a { background:var(--accent-l); }
+.ic-g { background:var(--gold-l); }
+.ic-n { background:var(--surface); }
+.info-lbl { font-size:.6rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-3); }
+.info-val { font-size:.83rem; font-weight:600; color:var(--ink); margin-top:.12rem; }
+
+/* ─ SKILLS ─ */
+.skills-cols { display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; }
+.sk-group-title {
+  font-family:'Sora',sans-serif; font-size:1rem; font-weight:700;
+  margin-bottom:1.5rem; color:var(--ink); display:flex; align-items:center; gap:.7rem;
+}
+.sk-group-title::before { content:''; width:4px; height:18px; background:var(--primary); border-radius:2px; }
+.sk-list { display:flex; flex-direction:column; gap:1.2rem; }
+.sk-row { }
+.sk-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:.45rem; }
+.sk-name { font-size:.85rem; font-weight:500; color:var(--ink-2); }
+.sk-pct { font-size:.72rem; font-weight:700; color:var(--primary); font-family:'Sora',sans-serif; }
+.sk-bar { height:6px; background:var(--border); border-radius:100px; overflow:hidden; }
+.sk-fill { height:100%; border-radius:100px; transform:scaleX(0); transform-origin:left; transition:transform 1.2s cubic-bezier(.4,0,.2,1); }
+.sk-fill.go { transform:scaleX(1); }
+.sf-p { background:linear-gradient(90deg,var(--primary),#8B7FFF); }
+.sf-a { background:linear-gradient(90deg,var(--accent),#2DD4D0); }
+.sf-g { background:linear-gradient(90deg,var(--gold),#F0C060); }
+
+/* ─ PROJECTS ─ */
+.proj-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.proj-card {
+  background:var(--white); border:1px solid var(--border); border-radius:16px;
+  overflow:hidden; transition:all .3s; box-shadow:0 2px 12px rgba(91,63,232,.04);
+}
+.proj-card:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(91,63,232,.13); border-color:rgba(91,63,232,.15); }
+.proj-head { padding:1.6rem 1.6rem 1.2rem; border-bottom:1px solid var(--border); }
+.proj-type { font-size:.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:.7rem; }
+.pt-p { color:var(--primary); }
+.pt-a { color:var(--accent); }
+.pt-g { color:var(--gold); }
+.pt-r { color:var(--red); }
+.proj-title { font-family:'Sora',sans-serif; font-size:1.05rem; font-weight:700; color:var(--ink); margin-bottom:.5rem; letter-spacing:-.3px; }
+.proj-desc { font-size:.78rem; color:var(--ink-2); line-height:1.8; }
+.proj-foot { padding:1rem 1.6rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+
+/* ─ EDUCATION ─ */
+.edu-grid { display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; align-items:start; }
+.timeline { position:relative; }
+.timeline::before { content:''; position:absolute; left:16px; top:8px; bottom:0; width:2px; background:var(--border); }
+.tl-item { display:flex; gap:1.3rem; margin-bottom:2rem; position:relative; }
+.tl-dot { width:34px; height:34px; border-radius:50%; background:var(--primary-l); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; z-index:1; }
+.tl-dot-inner { width:10px; height:10px; background:var(--primary); border-radius:50%; }
+.tl-year { font-size:.65rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--primary); margin-bottom:.35rem; font-family:'Sora',sans-serif; }
+.tl-school { font-size:.78rem; color:var(--ink-3); margin-bottom:.25rem; }
+.tl-degree { font-size:.9rem; font-weight:700; color:var(--ink); }
+
+.cert-list { display:flex; flex-direction:column; gap:.85rem; }
+.cert-item {
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:1rem 1.3rem; background:var(--white); border:1px solid var(--border);
+  border-radius:11px; transition:all .25s; box-shadow:0 2px 8px rgba(91,63,232,.03);
+}
+.cert-item:hover { border-color:rgba(91,63,232,.2); box-shadow:0 4px 20px rgba(91,63,232,.08); transform:translateX(4px); }
+.cert-left { display:flex; flex-direction:column; gap:.2rem; }
+.cert-org { font-size:.6rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-3); }
+.cert-name { font-size:.85rem; font-weight:600; color:var(--ink); }
+.cert-badge { font-size:.6rem; font-weight:700; padding:.28rem .75rem; border-radius:100px; letter-spacing:.5px; text-transform:uppercase; flex-shrink:0; }
+.cb-done { background:var(--accent-l); color:var(--accent); }
+.cb-wip  { background:var(--primary-l); color:var(--primary); }
+.cb-plan { background:var(--surface); color:var(--ink-3); }
+
+/* ─ CONTACT ─ */
+.contact-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:5rem; align-items:start; }
+.contact-info-title { font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:var(--ink); margin-bottom:.7rem; letter-spacing:-.3px; }
+.contact-info-sub { font-size:.88rem; color:var(--ink-2); line-height:1.85; margin-bottom:2rem; }
+.contact-email { font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--primary); display:block; margin-bottom:1.8rem; transition:color .2s; word-break:break-all; }
+.contact-email:hover { color:var(--primary-d); }
+.socials { display:flex; flex-direction:column; gap:.75rem; }
+.soc-item {
+  display:flex; align-items:center; gap:.9rem; padding:.9rem 1.2rem;
+  background:var(--white); border:1px solid var(--border); border-radius:11px;
+  font-size:.82rem; font-weight:500; color:var(--ink-2);
+  transition:all .25s; box-shadow:0 2px 8px rgba(91,63,232,.03);
+}
+.soc-item:hover { border-color:var(--primary); color:var(--primary); transform:translateX(5px); box-shadow:0 4px 20px rgba(91,63,232,.1); }
+.soc-icon { width:32px; height:32px; border-radius:8px; background:var(--primary-l); display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0; }
+
+/* form */
+.cf-form { display:flex; flex-direction:column; gap:1.1rem; }
+.cf-row2 { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+.cf-g { display:flex; flex-direction:column; gap:.4rem; }
+.cf-lbl { font-size:.63rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-3); }
+.cf-inp, .cf-ta {
+  background:var(--white); border:1.5px solid var(--border); border-radius:9px;
+  padding:.85rem 1.05rem; font-family:'Inter',sans-serif; font-size:.88rem; color:var(--ink);
+  transition:border-color .2s, box-shadow .2s;
+}
+.cf-inp::placeholder, .cf-ta::placeholder { color:var(--ink-3); }
+.cf-inp:focus, .cf-ta:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(91,63,232,.1); }
+.cf-ta { min-height:145px; resize:vertical; }
+.cf-select { background:var(--white); border:1.5px solid var(--border); border-radius:9px; padding:.85rem 1.05rem; font-family:'Inter',sans-serif; font-size:.88rem; color:var(--ink); cursor:pointer; }
+.cf-select:focus { outline:none; border-color:var(--primary); }
+.cf-submit { align-self:flex-start; padding:.92rem 2.4rem; background:var(--primary); color:#fff; font-family:'Inter',sans-serif; font-size:.82rem; font-weight:600; border:none; border-radius:9px; cursor:pointer; transition:all .25s; letter-spacing:.3px; }
+.cf-submit:hover { background:var(--primary-d); transform:translateY(-2px); box-shadow:0 8px 24px rgba(91,63,232,.3); }
+.cf-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.cf-msg { font-size:.78rem; padding:.75rem 1rem; border-radius:8px; display:none; }
+.cf-msg.ok  { background:var(--accent-l); color:var(--accent); border:1px solid rgba(26,191,181,.2); display:block; }
+.cf-msg.err { background:#FEECEC; color:var(--red); border:1px solid rgba(240,90,90,.2); display:block; }
+
+/* ─ FOOTER ─ */
+footer { background:var(--ink); color:rgba(255,255,255,.5); padding:2rem 6vw; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; font-size:.75rem; }
+footer strong { color:#fff; }
+.ft-dot { color:var(--primary); }
+
+/* ─ REVEAL ─ */
+.rv { opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
+.rv.go { opacity:1; transform:none; }
+.d1 { transition-delay:.1s; }
+.d2 { transition-delay:.2s; }
+.d3 { transition-delay:.3s; }
+
+/* ─ RESPONSIVE ─ */
+@media(max-width:1024px) {
+  #home { grid-template-columns:1fr; gap:3rem; padding-top:110px; }
+  .about-grid { grid-template-columns:1fr; gap:3rem; }
+  .skills-cols { grid-template-columns:1fr; gap:2.5rem; }
+  .edu-grid { grid-template-columns:1fr; gap:3rem; }
+  .contact-grid { grid-template-columns:1fr; gap:3rem; }
+}
+@media(max-width:768px) {
+  .n-links, .n-btn { display:none; }
+  .hbg { display:flex; }
+  .proj-grid { grid-template-columns:1fr; }
+  .cf-row2 { grid-template-columns:1fr; }
+  .h-numbers { flex-wrap:wrap; gap:1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="n-logo">Zina<span>.</span>Hamoumi</div>
+  <ul class="n-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#skills">Compétences</a></li>
+    <li><a href="#projects">Projets</a></li>
+    <li><a href="#education">Formation</a></li>
+    <li><a href="#contact" class="n-btn">Me contacter</a></li>
+  </ul>
+  <button class="hbg" id="hbg"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mob-menu" id="mob">
+  <a href="#about">À propos</a>
+  <a href="#skills">Compétences</a>
+  <a href="#projects">Projets</a>
+  <a href="#education">Formation</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div>
+    <div class="h-tag"><span class="h-tag-dot"></span>Disponible pour stage / alternance</div>
+    <h1 class="h-title">Zina<br><span class="grad">Hamoumi</span></h1>
+    <p class="h-desc">Étudiante passionnée en Administration Réseau & Sécurité. Je conçois des architectures réseau robustes et sécurisées, de la configuration Cisco à la cybersécurité.</p>
+    <div class="h-btns">
+      <a href="#projects" class="btn-p">Voir mes projets</a>
+      <a href="#contact" class="btn-g">Me contacter</a>
+    </div>
+    <div class="h-numbers">
+      <div><div class="h-num-n">10<span>+</span></div><div class="h-num-l">Projets réalisés</div></div>
+      <div><div class="h-num-n">3<span>+</span></div><div class="h-num-l">Années d'études</div></div>
+      <div><div class="h-num-n">4</div><div class="h-num-l">Langues parlées</div></div>
+    </div>
+  </div>
+  <div>
+    <div class="h-card">
+      <div class="h-card-label">Compétences clés</div>
+      <div class="chips">
+        <span class="chip chip-p">Cisco / CCNA</span>
+        <span class="chip chip-a">Wireshark</span>
+        <span class="chip chip-p">OSPF · BGP · VLAN</span>
+        <span class="chip chip-g">Python · Bash</span>
+        <span class="chip chip-a">Kali Linux</span>
+        <span class="chip chip-n">pfSense · Snort</span>
+        <span class="chip chip-p">VPN · SSL/TLS</span>
+        <span class="chip chip-a">VMware</span>
+        <span class="chip chip-g">Nmap</span>
+        <span class="chip chip-n">Windows Server</span>
+      </div>
+      <div class="h-card-sep"></div>
+      <div class="h-card-stats">
+        <div><div class="hcs-n">CCNA</div><div class="hcs-l">Cisco Networking Academy</div></div>
+        <div><div class="hcs-n">SOC</div><div class="hcs-l">Mémoire fin d'études</div></div>
+        <div><div class="hcs-n">BTS</div><div class="hcs-l">INSIM Bouira</div></div>
+        <div><div class="hcs-n">2026</div><div class="hcs-l">Diplôme visé</div></div>
+      </div>
+      <div class="avail-row"><span class="av-dot"></span>Ouverte aux opportunités — Bouira, Algérie</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<div class="sec-alt">
+<div class="sec-wrap section" id="about">
+  <div class="sec-num">01 — À propos</div>
+  <h2 class="sec-title rv">À propos de moi</h2>
+  <p class="sec-sub rv">Mon parcours, mes valeurs et ce qui me motive.</p>
+  <div class="about-grid">
+    <div class="rv">
+      <p class="about-p">Je suis <strong>Zina Hamoumi</strong>, étudiante en BTS Administration & Sécurité des Réseaux Informatiques à l'<strong>INSIM Bouira</strong>. Passionnée par la protection des systèmes d'information et la conception d'infrastructures réseau robustes.</p>
+      <p class="about-p">Mon cursus couvre les modules <strong>CCNA 1, 2 et 3</strong> ainsi que NETSEC — une formation pratique et intensive sur la configuration Cisco, le routage, le switching et la cybersécurité. Je mène en parallèle une <strong>Licence en Biotechnologie</strong> à l'Université de Bouira, ce qui développe ma capacité à analyser des systèmes complexes.</p>
+      <p class="about-p">Actuellement, je travaille sur mon <strong>mémoire de fin d'études</strong> portant sur la mise en place d'un SOC miniature open-source pour PME — un projet qui combine supervision réseau, analyse de logs et réponse aux incidents.</p>
+      <p class="about-p">Je recherche un <strong>stage en réseau et cybersécurité</strong> pour mettre mes compétences en pratique dans un environnement professionnel réel.</p>
+    </div>
+    <div class="info-cards rv d2">
+      <div class="info-c">
+        <div class="info-ic ic-p">🎓</div>
+        <div><div class="info-lbl">Formation</div><div class="info-val">BTS Réseaux — INSIM Bouira</div></div>
+      </div>
+      <div class="info-c">
+        <div class="info-ic ic-a">📍</div>
+        <div><div class="info-lbl">Localisation</div><div class="info-val">Bouira, Algérie · Mobilité nationale</div></div>
+      </div>
+      <div class="info-c">
+        <div class="info-ic ic-g">💬</div>
+        <div><div class="info-lbl">Langues</div><div class="info-val">Français · Arabe · Kabyle · Anglais</div></div>
+      </div>
+      <div class="info-c">
+        <div class="info-ic ic-n">🔍</div>
+        <div><div class="info-lbl">Objectif</div><div class="info-val">Stage / Alternance en Cybersécurité</div></div>
+      </div>
+      <div class="info-c">
+        <div class="info-ic ic-p">📄</div>
+        <div><div class="info-lbl">Mémoire</div><div class="info-val">SOC miniature open-source pour PME</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SKILLS -->
+<div class="sec-wrap section" id="skills">
+  <div class="sec-num">02 — Compétences</div>
+  <h2 class="sec-title rv">Compétences Techniques</h2>
+  <p class="sec-sub rv">Mes expertises en réseau, cybersécurité et développement, construites à travers des projets pratiques et des labs Cisco.</p>
+  <div class="skills-cols">
+    <div class="rv">
+      <div class="sk-group-title">Réseau & Infrastructure</div>
+      <div class="sk-list">
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Cisco Packet Tracer & GNS3</span><span class="sk-pct">90%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".90"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">OSPF · BGP · VLAN · STP</span><span class="sk-pct">80%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".80"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">DNS · DHCP · TCP/IP · NAT</span><span class="sk-pct">85%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".85"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Windows Server · Active Directory</span><span class="sk-pct">70%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".70"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Virtualisation (VMware · VirtualBox)</span><span class="sk-pct">65%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".65"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">EtherChannel · STP · Haute Dispo.</span><span class="sk-pct">70%</span></div><div class="sk-bar"><div class="sk-fill sf-p" data-w=".70"></div></div></div>
+      </div>
+    </div>
+    <div class="rv d2">
+      <div class="sk-group-title">Cybersécurité</div>
+      <div class="sk-list">
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Kali Linux · Ethical Hacking</span><span class="sk-pct">75%</span></div><div class="sk-bar"><div class="sk-fill sf-a" data-w=".75"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Wireshark · Analyse réseau</span><span class="sk-pct">75%</span></div><div class="sk-bar"><div class="sk-fill sf-a" data-w=".75"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">pfSense · Firewall · ACL</span><span class="sk-pct">70%</span></div><div class="sk-bar"><div class="sk-fill sf-a" data-w=".70"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Nmap · Vulnérabilités (CVE/CVSS)</span><span class="sk-pct">70%</span></div><div class="sk-bar"><div class="sk-fill sf-a" data-w=".70"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Supervision SOC · Nagios</span><span class="sk-pct">65%</span></div><div class="sk-bar"><div class="sk-fill sf-a" data-w=".65"></div></div></div>
+        <div class="sk-row"><div class="sk-top"><span class="sk-name">Python · Bash · Automatisation</span><span class="sk-pct">65%</span></div><div class="sk-bar"><div class="sk-fill sf-g" data-w=".65"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<div class="sec-alt">
+<div class="sec-wrap section" id="projects">
+  <div class="sec-num">03 — Projets</div>
+  <h2 class="sec-title rv">Mes Projets</h2>
+  <p class="sec-sub rv">Réseaux, cybersécurité et automatisation — des réalisations concrètes issues de mes études et de mon travail personnel.</p>
+  <div class="proj-grid" id="proj-list"></div>
+</div>
+</div>
+
+<!-- EDUCATION -->
+<div class="sec-wrap section" id="education">
+  <div class="sec-num">04 — Formation</div>
+  <h2 class="sec-title rv">Formation & Certifications</h2>
+  <p class="sec-sub rv">Mon parcours académique et les certifications obtenues ou en cours.</p>
+  <div class="edu-grid">
+    <div class="rv">
+      <div class="sk-group-title" style="margin-bottom:2rem;">Parcours académique</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+          <div>
+            <div class="tl-year">2024 — Présent</div>
+            <div class="tl-school">INSIM Bouira</div>
+            <div class="tl-degree">BTS Administration & Sécurité des Réseaux</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+          <div>
+            <div class="tl-year">2023 — Présent</div>
+            <div class="tl-school">Université de Bouira (UAMO)</div>
+            <div class="tl-degree">Licence en Biotechnologie</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+          <div>
+            <div class="tl-year">2025 — 2026</div>
+            <div class="tl-school">Mémoire de fin d'études</div>
+            <div class="tl-degree">SOC miniature open-source pour PME</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rv d2">
+      <div class="sk-group-title" style="margin-bottom:1.5rem;">Certifications</div>
+      <div class="cert-list" id="cert-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<div class="sec-alt">
+<div class="sec-wrap section" id="contact">
+  <div class="sec-num">05 — Contact</div>
+  <h2 class="sec-title rv">Contactez-moi</h2>
+  <p class="sec-sub rv">Discutons d'une opportunité de stage, d'un projet ou d'une collaboration technique.</p>
+  <div class="contact-grid">
+    <div class="rv">
+      <div class="contact-info-title">Travaillons ensemble</div>
+      <p class="contact-info-sub">Je suis disponible pour des opportunités de stage ou alternance en administration réseau et cybersécurité. N'hésitez pas à me contacter, je réponds sous 24h.</p>
+      <a href="mailto:zina.hamoumi@email.com" class="contact-email">zina.hamoumi@email.com</a>
+      <div class="socials">
+        <a href="#" class="soc-item"><div class="soc-icon">in</div>LinkedIn — Zina Hamoumi</a>
+        <a href="#" class="soc-item"><div class="soc-icon">gh</div>GitHub — @zinahamoumi</a>
+        <a href="#" class="soc-item"><div class="soc-icon">📍</div>Bouira, Algérie · Mobilité nationale</a>
+      </div>
+    </div>
+    <div class="rv d2">
+      <form class="cf-form" id="cform">
+        <div class="cf-row2">
+          <div class="cf-g"><label class="cf-lbl">Nom complet</label><input class="cf-inp" type="text" name="from_name" placeholder="Votre nom" required></div>
+          <div class="cf-g"><label class="cf-lbl">Email</label><input class="cf-inp" type="email" name="from_email" placeholder="vous@email.com" required></div>
+        </div>
+        <div class="cf-g">
+          <label class="cf-lbl">Type de demande</label>
+          <select class="cf-select" name="subject">
+            <option>Proposition de stage</option>
+            <option>Proposition d'alternance</option>
+            <option>Collaboration sur projet</option>
+            <option>Question technique</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="cf-g"><label class="cf-lbl">Message</label><textarea class="cf-ta" name="message" placeholder="Votre message..." required></textarea></div>
+        <div class="cf-msg" id="cfMsg"></div>
+        <button type="submit" class="cf-submit" id="cfBtn">Envoyer le message</button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2026 <strong>Zina Hamoumi</strong> <span class="ft-dot">·</span> Tous droits réservés</div>
+  <div>Administration Réseau & Sécurité <span class="ft-dot">·</span> Bouira, Algérie</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+// ─── DATA ───
+const DEFAULT_PROJECTS = [
+  { id:1, type:'Réseau', tc:'pt-p', title:'Infrastructure Réseau Entreprise', desc:"Conception complète sous Cisco Packet Tracer : routeurs, switches, VLAN 802.1Q, STP, EtherChannel, DNS/DHCP et ACL. Simulation d'un réseau PME avec segmentation et politiques d'accès.", tags:['Cisco','VLAN','STP','DNS/DHCP','ACL'] },
+  { id:2, type:'Cybersécurité', tc:'pt-a', title:'Audit de Sécurité & Ethical Hacking', desc:"Audit complet sur environnement virtualisé : scan Nmap, analyse Wireshark, identification de vulnérabilités CVE/CVSS et rapport de recommandations selon la méthodologie EBIOS.", tags:['Kali Linux','Nmap','Wireshark','CVE/CVSS','EBIOS'] },
+  { id:3, type:'Sécurité Système', tc:'pt-g', title:'Firewall pfSense & IDS Snort', desc:"Déploiement et configuration d'un pare-feu pfSense avec règles de filtrage avancées, intégration IDS/IPS Snort et tableau de bord de monitoring réseau en temps réel.", tags:['pfSense','Snort','IDS/IPS','Linux'] },
+  { id:4, type:'SOC · Mémoire', tc:'pt-r', title:'SOC Miniature Open-Source (PME)', desc:"Mémoire de fin d'études : mise en place d'un SOC open-source pour PME avec Nagios Core pour la supervision, Security Onion pour l'analyse de logs et gestion des incidents de sécurité.", tags:['Nagios','Security Onion','SOC','Supervision'] },
+];
+
+const DEFAULT_CERTS = [
+  { id:1, org:'Cisco Networking Academy', name:'CCNA 1 — Introduction aux Réseaux', status:'done', label:'Obtenu' },
+  { id:2, org:'Cisco Networking Academy', name:'CCNA 2/3 — Switching, Routing & Wireless', status:'wip', label:'En cours' },
+  { id:3, org:'Cisco Networking Academy', name:'Cybersécurité — Notions fondamentales', status:'wip', label:'En cours' },
+  { id:4, org:'Cisco Networking Academy', name:'Ethical Hacker', status:'wip', label:'En cours' },
+  { id:5, org:'CompTIA', name:'Security+', status:'plan', label:'Prévu' },
+];
+
+function getProjects(){ try{ const d=localStorage.getItem('zina_projects'); return d?JSON.parse(d):DEFAULT_PROJECTS; }catch{ return DEFAULT_PROJECTS; } }
+function getCerts(){ try{ const d=localStorage.getItem('zina_certs'); return d?JSON.parse(d):DEFAULT_CERTS; }catch{ return DEFAULT_CERTS; } }
+
+// ─── OBSERVER (avant les fonctions render) ───
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('go');
+      e.target.querySelectorAll('.sk-fill').forEach(b=>setTimeout(()=>b.classList.add('go'),300));
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.1});
+
+function watchAll(){ document.querySelectorAll('.rv:not(.go)').forEach(el=>obs.observe(el)); }
+
+// ─── RENDER ───
+function renderProjects(){
+  document.getElementById('proj-list').innerHTML = getProjects().map(p=>`
+    <div class="proj-card rv">
+      <div class="proj-head">
+        <div class="proj-type ${p.tc}">${p.type}</div>
+        <div class="proj-title">${p.title}</div>
+        <div class="proj-desc">${p.desc}</div>
+      </div>
+      <div class="proj-foot">${(p.tags||[]).map(t=>`<span class="chip chip-n">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+  watchAll();
+}
+
+function renderCerts(){
+  document.getElementById('cert-list').innerHTML = getCerts().map(c=>`
+    <div class="cert-item rv">
+      <div class="cert-left">
+        <div class="cert-org">${c.org}</div>
+        <div class="cert-name">${c.name}</div>
+      </div>
+      <span class="cert-badge cb-${c.status}">${c.label}</span>
+    </div>
+  `).join('');
+  watchAll();
+}
+
+// ─── SKILL BARS ───
+document.querySelectorAll('.sk-fill').forEach(b=>{
+  const o=new IntersectionObserver(e=>{
+    if(e[0].isIntersecting){ setTimeout(()=>b.classList.add('go'),350); o.disconnect(); }
+  },{threshold:.5});
+  o.observe(b);
+});
+
+// ─── NAV ───
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('sh',scrollY>20));
+
+// ─── HAMBURGER ───
+const hbg=document.getElementById('hbg'), mob=document.getElementById('mob');
+hbg.addEventListener('click',()=>{ hbg.classList.toggle('open'); mob.classList.toggle('open'); document.body.style.overflow=mob.classList.contains('open')?'hidden':''; });
+mob.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ hbg.classList.remove('open'); mob.classList.remove('open'); document.body.style.overflow=''; }));
+
+// ─── SMOOTH SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{ const t=document.querySelector(a.getAttribute('href')); if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }}));
+
+// ─── EMAILJS ───
+emailjs.init('YOUR_PUBLIC_KEY');
+document.getElementById('cform').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('cfBtn'), msg=document.getElementById('cfMsg');
+  btn.disabled=true; btn.textContent='Envoi...'; msg.className='cf-msg';
+  try{
+    await emailjs.sendForm('YOUR_SERVICE_ID','YOUR_TEMPLATE_ID',this);
+    msg.textContent='Message envoyé avec succès ! Je vous réponds sous 24h.';
+    msg.className='cf-msg ok'; this.reset();
+  }catch{
+    msg.textContent="Erreur. Contactez-moi directement : zina.hamoumi@email.com";
+    msg.className='cf-msg err';
+  }
+  btn.disabled=false; btn.textContent='Envoyer le message';
+});
+
+// ─── INIT ───
+renderProjects();
+renderCerts();
+watchAll();
+</script>
+</body>
+</html>

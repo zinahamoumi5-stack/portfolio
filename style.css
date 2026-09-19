@@ -1,0 +1,303 @@
+/* ========================================
+   🎀 PORTFOLIO — BASE DESIGN
+   Rose • Crème • Noir
+======================================== */
+
+
+/* ---------- VARIABLES ---------- */
+
+:root {
+    --cream: #FFF8F5;
+    --cream-dark: #F5E9E5;
+
+    --pink: #D92F7A;
+    --pink-light: #F7D6E5;
+    --pink-dark: #9E1F58;
+
+    --black: #111111;
+    --black-soft: #252525;
+
+    --white: #FFFFFF;
+
+    --border: #E8D7D2;
+
+    --shadow: 0 15px 40px rgba(17, 17, 17, 0.08);
+}
+
+
+/* ---------- RESET ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: var(--cream);
+    color: var(--black);
+
+    line-height: 1.6;
+
+    overflow-x: hidden;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+button,
+a {
+    cursor: pointer;
+}
+
+
+/* ---------- SELECTION ---------- */
+
+::selection {
+    background: var(--pink);
+    color: var(--white);
+}
+
+
+/* ========================================
+   🎀 NAVIGATION
+======================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 7%;
+
+    background: rgba(255, 248, 245, 0.92);
+
+    backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+/* ---------- LOGO ---------- */
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+
+    letter-spacing: -1px;
+}
+
+
+.logo span {
+    color: var(--pink);
+}
+
+
+/* ---------- NAV LINKS ---------- */
+
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+
+.navbar nav a {
+    position: relative;
+
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    transition: color 0.3s ease;
+}
+
+
+.navbar nav a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: -7px;
+
+    width: 0;
+    height: 2px;
+
+    background: var(--pink);
+
+    transition: width 0.3s ease;
+}
+
+
+.navbar nav a:hover {
+    color: var(--pink);
+}
+
+
+.navbar nav a:hover::after {
+    width: 100%;
+}
+
+
+/* ========================================
+   🎀 BOUTONS
+======================================== */
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 14px 24px;
+
+    border-radius: 50px;
+
+    font-size: 0.85rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+}
+
+
+.btn:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow);
+}
+
+
+/* ---------- BOUTON ROSE ---------- */
+
+.btn.primary {
+    background: var(--pink);
+    color: var(--white);
+}
+
+
+.btn.primary:hover {
+    background: var(--pink-dark);
+}
+
+
+/* ---------- BOUTON BLANC ---------- */
+
+.btn.secondary {
+    background: var(--white);
+
+    color: var(--black);
+
+    border: 1px solid var(--border);
+}
+
+
+.btn.secondary:hover {
+    border-color: var(--pink);
+
+    color: var(--pink);
+}
+
+
+/* ========================================
+   🎀 SECTIONS
+======================================== */
+
+.section {
+    width: min(1150px, 90%);
+
+    margin: 0 auto;
+
+    padding: 110px 0;
+}
+
+
+/* ---------- TITRES DES SECTIONS ---------- */
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-bottom: 55px;
+}
+
+
+.section-title span {
+    color: var(--pink);
+
+    font-size: 0.8rem;
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+
+.section-title h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+
+    font-weight: 900;
+
+    letter-spacing: -2px;
+}
+
+
+/* ========================================
+   🎀 RESPONSIVE — PETITS ÉCRANS
+======================================== */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        padding: 18px 5%;
+    }
+
+
+    .navbar nav {
+        gap: 15px;
+    }
+
+
+    .navbar nav a {
+        font-size: 0.7rem;
+    }
+
+
+    .section {
+        width: 90%;
+
+        padding: 75px 0;
+    }
+
+
+    .section-title {
+        margin-bottom: 35px;
+    }
+
+}
